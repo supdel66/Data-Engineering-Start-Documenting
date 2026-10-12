@@ -1,0 +1,3 @@
+sudo -iu postgres psql 
+
+duckdb md: database_name   (data_jobs for duckdb)
