@@ -117,3 +117,66 @@ having median(salary_year_avg )> median_salary.m
 limit 4;
 
 0.272 seconds 
+
+with title_median
+
+select job_title_short, median(salary_year_avg), job_work_from_home
+from job_postings_fact group by job_title_short, job_work_from_home;
+
+
+
+
+with remote_jobs as (
+    select job_title_short, salary_year_avg
+    from job_postings_fact 
+    where salary_year_avg is not null 
+    and job_work_from_home=True
+),
+onsite_jobs as (
+    select job_title_short, salary_year_avg
+    from job_postings_fact 
+    where salary_year_avg is not null 
+    and job_work_from_home=False
+)
+select r.job_title_short , median(r.salary_year_avg), median(o.salary_year_avg)
+from remote_jobs as r inner join onsite_jobs as o on r.job_title_short=o.job_title_short
+group by r.job_title_short
+;
+┌───────────────────────────┬───────────────────────────┬───────────────────────────┐
+│      job_title_short      │ median(r.salary_year_avg) │ median(o.salary_year_avg) │
+│          varchar          │          double           │          double           │
+├───────────────────────────┼───────────────────────────┼───────────────────────────┤
+│ Cloud Engineer            │                  132000.0 │                  117625.0 │
+│ Senior Data Analyst       │                  105000.0 │                  110432.5 │
+│ Machine Learning Engineer │                  138433.5 │                  135000.0 │
+│ Senior Data Engineer      │                  145000.0 │                  147500.0 │
+│ Senior Data Scientist     │                  160000.0 │                  155000.0 │
+│ Data Engineer             │                  135000.0 │                  130000.0 │
+│ Software Engineer         │                  180000.0 │                  130000.0 │
+│ Data Analyst              │                   87500.0 │                   90000.0 │
+│ Data Scientist            │                  132500.0 │                  125000.0 │
+│ Business Analyst          │                   90000.0 │                   92500.0 │
+└───────────────────────────┴───────────────────────────┴───────────────────────────┘
+
+
+select range(10);
+┌────────────────────────────────┐
+│          "range"(10)           │
+│            int64[]             │
+├────────────────────────────────┤
+│ [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] │
+
+
+
+select * from range(10) as src(key) 
+where exists (
+select 1 from range(3) as target(key)
+where target.key=src.key
+);
+
+
+select * from job_postings_fact as src
+where not exists (
+    select 1 from skills_job_dim as target 
+    where src.job_id=target.job_id
+)order by job_id limit 10; 
