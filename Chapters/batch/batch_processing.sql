@@ -10,7 +10,8 @@ insert into staging.priority_roles
 values
 (1, 'Data Engineer', 1),
 (2,'Senior Data Analyst', 1),
-(3,'Machine Learning Engineer',8)
+(3,'Machine Learning Engineer',5),
+(4,'Data Scientist',7)
 ;
 
-select * from staging.priority_roles
+select * from staging.priority_roles;
